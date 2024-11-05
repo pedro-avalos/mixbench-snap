@@ -28,13 +28,11 @@ apps:
     command: bin/mixbench-cpu
     extensions: [gnome]
     plugs:
-      - opengl
       - hardware-observe
   cuda:
     command: bin/mixbench-cuda
     extensions: [gnome]
     plugs:
-      - opengl
       - hardware-observe
   hip:
     command: bin/mixbench-hip
@@ -42,13 +40,11 @@ apps:
     environment:
       LD_LIBRARY_PATH: $SNAP/opt/rocm-6.2.2/lib:$LD_LIBRARY_PATH
     plugs:
-      - opengl
       - hardware-observe
   ocl:
     command: bin/mixbench-ocl
     extensions: [gnome]
     plugs:
-      - opengl
       - hardware-observe
 
 package-repositories:
