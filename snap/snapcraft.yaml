@@ -29,25 +29,25 @@ platforms:
 apps:
   cpu:
     command: bin/mixbench-cpu
-    extensions: [gnome]
     plugs:
+      - opengl
       - hardware-observe
   cuda:
     command: bin/mixbench-cuda
-    extensions: [gnome]
     plugs:
+      - opengl
       - hardware-observe
   hip:
     command: bin/mixbench-hip
-    extensions: [gnome]
     environment:
       LD_LIBRARY_PATH: $SNAP/opt/rocm-6.2.2/lib:$LD_LIBRARY_PATH
     plugs:
+      - opengl
       - hardware-observe
   ocl:
     command: bin/mixbench-ocl
-    extensions: [gnome]
     plugs:
+      - opengl
       - hardware-observe
 
 package-repositories:
@@ -73,7 +73,16 @@ package-repositories:
     priority: 600
 
 parts:
+  glib-only:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-type: git
+    source-subdir: glib-only
+    plugin: make
+    build-packages: [libglib2.0-dev]
+    stage-packages: [libglib2.0-bin]
+
   mixbench:
+    after: [glib-only]
     plugin: cmake
     source: https://github.com/ekondis/mixbench.git
     source-type: git
@@ -91,6 +100,7 @@ parts:
       - hsa-rocr
       - rocprofiler-register
       - ocl-icd-libopencl1
+      - libglu1-mesa
     build-environment:
       - CUDACXX: /usr/local/cuda/bin/nvcc
       - HIP_PATH: /opt/rocm
