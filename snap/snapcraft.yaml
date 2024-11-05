@@ -23,6 +23,9 @@ grade: stable
 confinement: strict
 compression: lzo
 
+platforms:
+  amd64:
+
 apps:
   cpu:
     command: bin/mixbench-cpu
