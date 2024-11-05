@@ -27,22 +27,29 @@ apps:
   cpu:
     command: bin/mixbench-cpu
     extensions: [gnome]
-
+    plugs:
+      - opengl
+      - hardware-observe
   cuda:
     command: bin/mixbench-cuda
     extensions: [gnome]
-
+    plugs:
+      - opengl
+      - hardware-observe
   hip:
     command: bin/mixbench-hip
     extensions: [gnome]
-
-  opencl:
-    command: bin/mixbench-opencl
+    environment:
+      LD_LIBRARY_PATH: $SNAP/opt/rocm-6.2.2/lib:$LD_LIBRARY_PATH
+    plugs:
+      - opengl
+      - hardware-observe
+  ocl:
+    command: bin/mixbench-ocl
     extensions: [gnome]
-
-  sycl:
-    command: bin/mixbench-sycl
-    extensions: [gnome]
+    plugs:
+      - opengl
+      - hardware-observe
 
 package-repositories:
   - type: apt
@@ -57,13 +64,13 @@ package-repositories:
     components: [main]
     suites: [noble]
     key-id: CA8BB4727A47B4D09B4EE8969386B48A1A693C5C
-    url: https://repo.radeon.com/amdgpu/latest/ubuntu
+    url: https://repo.radeon.com/amdgpu/6.2.2/ubuntu
   - type: apt
     architectures: [amd64]
     components: [main]
     suites: [noble]
     key-id: CA8BB4727A47B4D09B4EE8969386B48A1A693C5C
-    url: https://repo.radeon.com/rocm/apt/latest
+    url: https://repo.radeon.com/rocm/apt/6.2.2
     priority: 600
 
 parts:
@@ -72,7 +79,22 @@ parts:
     source: https://github.com/ekondis/mixbench.git
     source-type: git
     source-commit: 597b7002b9596685e2911acaf13c6780a06e7286
-    build-packages: [gcc, g++, cuda-toolkit, rocm]
+    build-snaps: [cmake]
+    build-packages:
+      - cuda-toolkit
+      - rocm
+      - hip-dev
+      - rocm-hip-runtime-dev
+    stage-packages:
+      - libgomp1
+      - libnuma1
+      - hip-runtime-amd
+      - hsa-rocr
+      - rocprofiler-register
+      - ocl-icd-libopencl1
+    build-environment:
+      - CUDACXX: /usr/local/cuda/bin/nvcc
+      - HIP_PATH: /opt/rocm
     override-build: |
       cd $SNAPCRAFT_PART_SRC
 
@@ -103,12 +125,13 @@ parts:
       cd build-opencl
       cmake ../mixbench-opencl
       cmake --build .
-      cp mixbench-opencl $CRAFT_PART_INSTALL/bin/
+      cp mixbench-ocl $CRAFT_PART_INSTALL/bin/
       cd ..
-
-      mkdir -p build-sycl
-      cd build-sycl
-      cmake ../mixbench-sycl
-      cmake --build .
-      cp mixbench-sycl $CRAFT_PART_INSTALL/bin/
-      cd ..
+    stage:
+      - -opt/amdgpu/lib/x86_64-linux-gnu/libdrm.so*
+      - -opt/rocm-6.2.2/lib/libhiprtc.so*
+      - -opt/rocm-6.2.2/lib/librocm-core.so*
+      - -usr/lib/x86_64-linux-gnu/libform.so*
+      - -usr/lib/x86_64-linux-gnu/libmenu.so*
+      - -usr/lib/x86_64-linux-gnu/libpanel.so*
+      - -usr/lib/x86_64-linux-gnu/libncurses.so*
