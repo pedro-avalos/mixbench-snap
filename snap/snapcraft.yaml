@@ -15,9 +15,92 @@ grade: stable
 confinement: strict
 compression: lzo
 
+apps:
+  cpu:
+    command: bin/mixbench-cpu
+    extensions: [gnome]
+
+  cuda:
+    command: bin/mixbench-cuda
+    extensions: [gnome]
+
+  hip:
+    command: bin/mixbench-hip
+    extensions: [gnome]
+
+  opencl:
+    command: bin/mixbench-opencl
+    extensions: [gnome]
+
+  sycl:
+    command: bin/mixbench-sycl
+    extensions: [gnome]
+
+package-repositories:
+  - type: apt
+    architectures: [amd64]
+    formats: [deb]
+    path: /
+    key-id: EB693B3035CD5710E231E123A4B469963BF863CC
+    url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64
+    priority: 600
+  - type: apt
+    architectures: [amd64]
+    components: [main]
+    suites: [noble]
+    key-id: CA8BB4727A47B4D09B4EE8969386B48A1A693C5C
+    url: https://repo.radeon.com/amdgpu/latest/ubuntu
+  - type: apt
+    architectures: [amd64]
+    components: [main]
+    suites: [noble]
+    key-id: CA8BB4727A47B4D09B4EE8969386B48A1A693C5C
+    url: https://repo.radeon.com/rocm/apt/latest
+    priority: 600
+
 parts:
   mixbench:
-    plugin: nil
+    plugin: cmake
     source: https://github.com/ekondis/mixbench.git
     source-type: git
     source-commit: 597b7002b9596685e2911acaf13c6780a06e7286
+    build-packages: [gcc, g++, cuda-toolkit, rocm]
+    override-build: |
+      cd ${SNAPCRAFT_PART_SRC}
+
+      mkdir -p $CRAFT_PART_INSTALL/bin
+
+      mkdir -p build-cpu
+      cd build-cpu
+      cmake ../mixbench-cpu
+      cmake --build .
+      cp mixbench-cpu $CRAFT_PART_INSTALL/bin
+      cd ..
+
+      mkdir -p build-cuda
+      cd build-cuda
+      cmake ../mixbench-cuda -DCMAKE_CUDA_ARCHITECTURES=all
+      cmake --build .
+      cp mixbench-cuda $CRAFT_PART_INSTALL/bin/
+      cd ..
+
+      mkdir -p build-hip
+      cd build-hip
+      cmake ../mixbench-hip
+      cmake --build .
+      cp mixbench-hip $CRAFT_PART_INSTALL/bin/
+      cd ..
+
+      mkdir -p build-opencl
+      cd build-opencl
+      cmake ../mixbench-opencl
+      cmake --build .
+      cp mixbench-opencl $CRAFT_PART_INSTALL/bin/
+      cd ..
+
+      mkdir -p build-sycl
+      cd build-sycl
+      cmake ../mixbench-sycl
+      cmake --build .
+      cp mixbench-sycl $CRAFT_PART_INSTALL/bin/
+      cd ..
