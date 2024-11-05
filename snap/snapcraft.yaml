@@ -129,6 +129,7 @@ parts:
       cd ..
     stage:
       - -opt/amdgpu/lib/x86_64-linux-gnu/libdrm.so*
+      - -opt/amdgpu/lib/x86_64-linux-gnu/libdrm_amdgpu.so*
       - -opt/rocm-6.2.2/lib/libhiprtc.so*
       - -opt/rocm-6.2.2/lib/librocm-core.so*
       - -usr/lib/x86_64-linux-gnu/libform.so*
