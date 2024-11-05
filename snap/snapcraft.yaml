@@ -1,8 +1,9 @@
 name: mixbench
-version: '0.04'
+version: 597b7002b9
 summary: A GPU benchmark tool for evaluating GPUs and CPUs
 description: |
-  A GPU benchmark tool for evaluating GPUs and CPUs on mixed operational intensity kernels
+  A GPU benchmark tool for evaluating GPUs and CPUs on mixed operational
+  intensity kernels
 
 website: https://github.com/ekondis/mixbench
 contact: https://github.com/pedro-avalos/mixbench/issues
@@ -19,4 +20,4 @@ parts:
     plugin: nil
     source: https://github.com/ekondis/mixbench.git
     source-type: git
-    source-tag: v${SNAPCRAFT_PROJECT_VERSION}
+    source-commit: 597b7002b9596685e2911acaf13c6780a06e7286
