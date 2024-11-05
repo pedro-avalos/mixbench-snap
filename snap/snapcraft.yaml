@@ -1,4 +1,6 @@
 name: mixbench
+title: Mixbench
+license: GPL-2.0
 version: 597b7002b9
 summary: A GPU benchmark tool for evaluating GPUs and CPUs
 description: |
@@ -72,7 +74,7 @@ parts:
     source-commit: 597b7002b9596685e2911acaf13c6780a06e7286
     build-packages: [gcc, g++, cuda-toolkit, rocm]
     override-build: |
-      cd ${SNAPCRAFT_PART_SRC}
+      cd $SNAPCRAFT_PART_SRC
 
       mkdir -p $CRAFT_PART_INSTALL/bin
 
