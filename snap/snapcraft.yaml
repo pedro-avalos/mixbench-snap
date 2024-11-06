@@ -31,11 +31,13 @@ apps:
     command: bin/mixbench-cpu
     plugs:
       - opengl
+      - network-bind
       - hardware-observe
   cuda:
     command: bin/mixbench-cuda
     plugs:
       - opengl
+      - network-bind
       - hardware-observe
   hip:
     command: bin/mixbench-hip
@@ -43,11 +45,13 @@ apps:
       LD_LIBRARY_PATH: $SNAP/opt/rocm-6.2.2/lib:$LD_LIBRARY_PATH
     plugs:
       - opengl
+      - network-bind
       - hardware-observe
   ocl:
     command: bin/mixbench-ocl
     plugs:
       - opengl
+      - network-bind
       - hardware-observe
 
 package-repositories:
