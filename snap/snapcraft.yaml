@@ -1,7 +1,7 @@
 name: mixbench
 title: Mixbench
 license: GPL-2.0
-version: 597b7002b9
+version: 3dc1cdc27a
 summary: A GPU benchmark tool for evaluating GPUs and CPUs
 description: |
   The purpose of this benchmark tool is to evaluate performance bounds of GPUs
