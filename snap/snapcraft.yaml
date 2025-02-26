@@ -25,6 +25,7 @@ compression: lzo
 
 platforms:
   amd64:
+  arm64:
 
 apps:
   cpu:
@@ -61,6 +62,13 @@ package-repositories:
     path: /
     key-id: EB693B3035CD5710E231E123A4B469963BF863CC
     url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64
+    priority: 600
+  - type: apt
+    architectures: [arm64]
+    formats: [deb]
+    path: /
+    key-id: EB693B3035CD5710E231E123A4B469963BF863CC
+    url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/sbsa
     priority: 600
   - type: apt
     architectures: [amd64]
