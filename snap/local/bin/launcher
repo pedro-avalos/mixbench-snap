@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+case "$1" in
+cpu)
+    $SNAP/bin/mixbench-cpu
+    ;;
+cuda)
+    $SNAP/bin/mixbench-cuda
+    ;;
+hip)
+    $SNAP/bin/mixbench-hip
+    ;;
+ocl)
+    $SNAP/bin/mixbench-ocl
+    ;;
+esac

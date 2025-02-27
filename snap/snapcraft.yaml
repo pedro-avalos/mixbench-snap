@@ -29,19 +29,19 @@ platforms:
 
 apps:
   cpu:
-    command: bin/mixbench-cpu
+    command: bin/launcher cpu
     plugs:
       - opengl
       - network-bind
       - hardware-observe
   cuda:
-    command: bin/mixbench-cuda
+    command: bin/launcher cuda
     plugs:
       - opengl
       - network-bind
       - hardware-observe
   hip:
-    command: bin/mixbench-hip
+    command: bin/launcher hip
     environment:
       LD_LIBRARY_PATH: $SNAP/opt/rocm-6.2.2/lib:$LD_LIBRARY_PATH
     plugs:
@@ -49,7 +49,7 @@ apps:
       - network-bind
       - hardware-observe
   ocl:
-    command: bin/mixbench-ocl
+    command: bin/launcher ocl
     plugs:
       - opengl
       - network-bind
@@ -85,6 +85,11 @@ package-repositories:
     priority: 600
 
 parts:
+  launcher:
+    plugin: dump
+    source: snap/local
+    source-type: local
+
   glib-only:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
     source-type: git
@@ -95,31 +100,34 @@ parts:
 
   mixbench:
     after: [glib-only]
-    plugin: cmake
+    plugin: nil
     source: https://github.com/ekondis/mixbench.git
     source-type: git
     source-commit: 597b7002b9596685e2911acaf13c6780a06e7286
     build-snaps: [cmake]
     build-packages:
       - cuda-toolkit
-      - rocm
-      - hip-dev
-      - rocm-hip-runtime-dev
+      - on amd64:
+        - hip-dev
+        - rocm
+        - rocm-hip-runtime-dev
     stage-packages:
+      - libglu1-mesa
       - libgomp1
       - libnuma1
-      - hip-runtime-amd
-      - hsa-rocr
-      - rocprofiler-register
       - ocl-icd-libopencl1
-      - libglu1-mesa
+      - on amd64:
+        - hip-runtime-amd
+        - hsa-rocr
+        - rocprofiler-register
     build-environment:
       - CUDACXX: /usr/local/cuda/bin/nvcc
       - HIP_PATH: /opt/rocm
     override-build: |
-      cd $SNAPCRAFT_PART_SRC
-
+      craftctl default
       mkdir -p $CRAFT_PART_INSTALL/bin
+
+      cd $CRAFT_PART_SRC
 
       mkdir -p build-cpu
       cd build-cpu
@@ -135,19 +143,21 @@ parts:
       cp mixbench-cuda $CRAFT_PART_INSTALL/bin/
       cd ..
 
-      mkdir -p build-hip
-      cd build-hip
-      cmake ../mixbench-hip
-      cmake --build .
-      cp mixbench-hip $CRAFT_PART_INSTALL/bin/
-      cd ..
+      if [ "$CRAFT_ARCH_BUILD_ON" = "amd64" ] ; then
+        mkdir -p build-hip
+        cd build-hip
+        cmake ../mixbench-hip
+        cmake --build .
+        cp mixbench-hip $CRAFT_PART_INSTALL/bin/
+        cd ..
 
-      mkdir -p build-opencl
-      cd build-opencl
-      cmake ../mixbench-opencl
-      cmake --build .
-      cp mixbench-ocl $CRAFT_PART_INSTALL/bin/
-      cd ..
+        mkdir -p build-opencl
+        cd build-opencl
+        cmake ../mixbench-opencl
+        cmake --build .
+        cp mixbench-ocl $CRAFT_PART_INSTALL/bin/
+        cd ..
+      fi
     stage:
       - -opt/amdgpu/lib/x86_64-linux-gnu/libdrm.so*
       - -opt/amdgpu/lib/x86_64-linux-gnu/libdrm_amdgpu.so*
